@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "status": true,
+    "thumbnails": [],
+    "title": "Camiseta Titular 2023",
+    "description": "Camiseta de Independendiente titular del 2023",
+    "code": "A1",
+    "price": 98,
+    "stock": 26,
+    "category": "Camisetas"
+  }
+]
