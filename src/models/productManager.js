@@ -38,18 +38,16 @@ class ProductManager {
         // Validar campos obligatorios
         const requiredFields = ['title', 'description', 'price', 'code', 'stock'];
         const missingFields = requiredFields.filter(field => !product[field]);
-
+    
         if (missingFields.length > 0) {
-            console.error(`Los campos obligatorios faltan: ${missingFields.join(', ')}`);
-            return;
+            throw new Error(`Los campos obligatorios faltan: ${missingFields.join(', ')}`);
         }
-
+    
         // Validar que el campo "code" no se repita
         if (this.products.some(p => p.code === product.code)) {
-            console.error("Ya existe un producto con ese código");
-            return;
+            throw new Error("Ya existe un producto con ese código");
         }
-
+    
         // Agregar producto con id autoincrementable
         const newProduct = {
             id: this.productIdCounter++,
@@ -61,6 +59,7 @@ class ProductManager {
         this.saveProducts();
         console.log("Producto agregado correctamente:", newProduct);
     }
+    
 
     getProducts() {
         return this.products;

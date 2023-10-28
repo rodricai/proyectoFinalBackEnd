@@ -55,9 +55,12 @@ class CartManager {
     }
 
     addProductToCart(cartId, productId, quantity) {
-        const cart = this.getCartById(cartId);
-        if (cart) {
+        const cartIndex = this.carts.findIndex(cart => cart.id === cartId);
+    
+        if (cartIndex !== -1) {
+            const cart = this.carts[cartIndex];
             const existingProduct = cart.products.find(p => p.product === productId);
+    
             if (existingProduct) {
                 existingProduct.quantity += quantity;
             } else {
@@ -66,12 +69,15 @@ class CartManager {
                     quantity
                 });
             }
+    
             this.saveCarts();
             console.log(`Producto con id ${productId} agregado al carrito con id ${cartId}`);
+        } else {
+            console.error('Carrito no encontrado');
         }
     }
 }
+module.exports = { CartManager };
 
-module.exports = {
-    CartManager
-};
+
+

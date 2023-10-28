@@ -1,6 +1,6 @@
 const { CartManager } = require('../models/cartManager');
 
-const gestorCarts = new CartManager('./carritos.json');
+const gestorCarts = new CartManager('../carritos.json');
 
 const createCart = (req, res) => {
     const nuevoCarrito = gestorCarts.createCart();

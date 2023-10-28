@@ -1,6 +1,6 @@
 const { ProductManager } = require('../models/productManager');
 
-const gestorProducts = new ProductManager('./productos.json');
+const gestorProducts = new ProductManager("../productos.json");
 
 const getProducts = (req, res) => {
     const limit = req.query.limit;
