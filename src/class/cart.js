@@ -1,6 +1,6 @@
 const { CartManager } = require('../models/cartManager');
 
-const gestorCarts = new CartManager('../carritos.json');
+const gestorCarts = new CartManager('./carritos.json');
 
 const createCart = (req, res) => {
     const nuevoCarrito = gestorCarts.createCart();
@@ -23,6 +23,9 @@ const addProductToCart = (req, res) => {
     const idProducto = parseInt(req.params.pid);
     const quantity = parseInt(req.body.quantity);
 
+    if (isNaN(quantity) || quantity <= 0) {
+        return res.status(400).json({ error: 'La cantidad debe ser un número positivo' });
+    }
     gestorCarts.addProductToCart(idCarrito, idProducto, quantity);
 
     res.json({ message: 'Producto agregado al carrito correctamente' });
