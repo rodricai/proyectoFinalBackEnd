@@ -1,38 +1,38 @@
 const { CartManager } = require('../models/cartManager');
 
-const gestorCarts = new CartManager('./carritos.json');
+class Cart {
+  constructor() {
+    this.gestorCarts = new CartManager('./carritos.json');
+  }
 
-const createCart = (req, res) => {
-    const nuevoCarrito = gestorCarts.createCart();
+  createCart(req, res) {
+    const nuevoCarrito = this.gestorCarts.createCart();
     res.status(201).json({ message: 'Carrito creado correctamente', cart: nuevoCarrito });
-};
+  }
 
-const getCartProducts = (req, res) => {
+  getCartProducts(req, res) {
     const idCarrito = parseInt(req.params.cid);
-    const carrito = gestorCarts.getCartById(idCarrito);
+    const carrito = this.gestorCarts.getCartById(idCarrito);
 
     if (carrito) {
-        res.json(carrito.products);
+      res.json(carrito.products);
     } else {
-        res.status(404).json({ error: 'Carrito no encontrado' });
+      res.status(404).json({ error: 'Carrito no encontrado' });
     }
-};
+  }
 
-const addProductToCart = (req, res) => {
+  addProductToCart(req, res) {
     const idCarrito = parseInt(req.params.cid);
     const idProducto = parseInt(req.params.pid);
     const quantity = parseInt(req.body.quantity);
 
     if (isNaN(quantity) || quantity <= 0) {
-        return res.status(400).json({ error: 'La cantidad debe ser un número positivo' });
+      return res.status(400).json({ error: 'La cantidad debe ser un número positivo' });
     }
-    gestorCarts.addProductToCart(idCarrito, idProducto, quantity);
 
+    this.gestorCarts.addProductToCart(idCarrito, idProducto, quantity);
     res.json({ message: 'Producto agregado al carrito correctamente' });
-};
+  }
+}
 
-module.exports = {
-    createCart,
-    getCartProducts,
-    addProductToCart
-};
+module.exports = Cart;
