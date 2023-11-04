@@ -56,20 +56,24 @@ class CartManager {
 
     addProductToCart(cartId, productId, quantity) {
         const cartIndex = this.carts.findIndex(cart => cart.id === cartId);
-    
+
         if (cartIndex !== -1) {
             const cart = this.carts[cartIndex];
             const existingProduct = cart.products.find(p => p.product === productId);
-    
+
             if (existingProduct) {
-                existingProduct.quantity += quantity;
+                if (existingProduct.quantity !== undefined) {
+                    existingProduct.quantity += quantity;
+                } else {
+                    existingProduct.quantity = quantity;
+                }
             } else {
                 cart.products.push({
                     product: productId,
                     quantity
                 });
             }
-    
+
             this.saveCarts();
             console.log(`Producto con id ${productId} agregado al carrito con id ${cartId}`);
         } else {
@@ -77,4 +81,5 @@ class CartManager {
         }
     }
 }
-module.exports = { CartManager };
+
+module.exports = CartManager;
