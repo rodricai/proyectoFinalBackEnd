@@ -1,3 +1,4 @@
+const { log } = require('console');
 const fs = require('fs');
 
 class CartManager {
@@ -54,23 +55,22 @@ class CartManager {
         }
     }
 
-    addProductToCart(cartId, productId, quantity) {
-        const cartIndex = this.carts.findIndex(cart => cart.id === cartId);
+    addProductToCart(cartId, productId) {
+        const cartIndex = this.carts.findIndex((cart) => cart.id === cartId);
 
         if (cartIndex !== -1) {
             const cart = this.carts[cartIndex];
-            const existingProduct = cart.products.find(p => p.product === productId);
-
+            const existingProduct = cart.products.find(
+                (p) => p.product === productId
+            );
+            console.log(existingProduct.quantity, "existing");
             if (existingProduct) {
-                if (existingProduct.quantity !== undefined) {
-                    existingProduct.quantity += quantity;
-                } else {
-                    existingProduct.quantity = quantity;
-                }
+                existingProduct.quantity++;
+
             } else {
                 cart.products.push({
                     product: productId,
-                    quantity
+                    quantity: 1
                 });
             }
 
