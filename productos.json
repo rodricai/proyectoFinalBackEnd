@@ -9,5 +9,93 @@
     "price": 98,
     "stock": 26,
     "category": "Camisetas"
+  },
+  {
+    "id": 2,
+    "status": true,
+    "thumbnails": [],
+    "title": "Camiseta Titular 2021",
+    "description": "Camiseta de Independendiente titular del 2021",
+    "code": "A2",
+    "price": 58,
+    "stock": 6,
+    "category": "Camisetas"
+  }, 
+  {
+    "id": 3,
+    "status": true,
+    "thumbnails": [],
+    "title": "Camiseta Suplente 2023",
+    "description": "Camiseta de Independendiente suplente del 2023",
+    "code": "A3",
+    "price": 78,
+    "stock": 23,
+    "category": "Camisetas"
+  },
+  {
+    "id": 4,
+    "status": true,
+    "thumbnails": [],
+    "title": "Short Titular 2023",
+    "description": "Short de Independendiente titular del 2023",
+    "code": "B1",
+    "price": 58,
+    "stock": 26,
+    "category": "Short"
+  },
+  {
+    "id": 5,
+    "status": true,
+    "thumbnails": [],
+    "title": "Short Suplente 2023",
+    "description": "Short de Independendiente suplente del 2023",
+    "code": "B2",
+    "price": 48,
+    "stock": 26,
+    "category": "Short"
+  },
+  {
+    "id": 6,
+    "status": true,
+    "thumbnails": [],
+    "title": "Campera Independiente",
+    "description": "Campera de Independendiente roja",
+    "code": "C1",
+    "price": 75,
+    "stock": 16,
+    "category": "Abrigos y accesorios"
+  }, 
+  {
+    "id": 7,
+    "status": true,
+    "thumbnails": [],
+    "title": "Buso Independiente",
+    "description": "Buso de Independendiente negro",
+    "code": "C2",
+    "price": 67,
+    "stock": 8,
+    "category": "Abrigos y accesorios"
+  },
+  {
+    "id": 8,
+    "status": true,
+    "thumbnails": [],
+    "title": "Pelota Independiente",
+    "description": "Pelota de Independendiente negra",
+    "code": "C3",
+    "price": 28,
+    "stock": 9,
+    "category": "Abrigos y accesorios"
+  },
+  {
+    "id": 9,
+    "status": true,
+    "thumbnails": [],
+    "title": "Mochila de independiente ",
+    "description": "Mochila de Independendiente gris ",
+    "code": "C4",
+    "price": 50,
+    "stock": 6,
+    "category": "Abrigos y accesorios"
   }
 ]

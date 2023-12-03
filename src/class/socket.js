@@ -1,4 +1,4 @@
-const { Server } = require('socket.io');
+/*const { Server } = require('socket.io');
 const http = require('http');
 const fs = require('fs');
 
@@ -26,3 +26,15 @@ class Socket {
 }
 
 module.exports = Socket;
+*/
+const {Server}  = require('socket.io')
+
+const init = (httpServer) => {
+  const socketServer = new Server(httpServer);
+
+  socketServer.on("connection", (socketClient) => {
+    console.log(`Usuario conectado ${socketClient.id}`);
+
+  });
+};
+module.exports = init;

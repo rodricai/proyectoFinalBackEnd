@@ -1,9 +1,9 @@
 const express = require('express');
 const socketRouter = express.Router();
-const socket = require('../class/socket');
+const socketServer = require('../class/socket');
 
-const socketController = new socket();
-
-socketRouter.get('/realtimeproducts', (req, res) => socketController.realTimeProducts(req, res));
-
+socketRouter.get('/realtimeproducts', (req, res) => {
+    socketServer.emit('realTimeProducts', { /* datos que deseas enviar */ });
+    res.send('OK');
+});
 module.exports = socketRouter;
