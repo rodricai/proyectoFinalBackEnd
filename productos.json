@@ -8,7 +8,8 @@
     "code": "A1",
     "price": 98,
     "stock": 26,
-    "category": "Camisetas"
+    "category": "Camisetas",
+    "available": true
   },
   {
     "id": 2,
@@ -19,7 +20,8 @@
     "code": "A2",
     "price": 58,
     "stock": 6,
-    "category": "Camisetas"
+    "category": "Camisetas",
+    "available": true
   }, 
   {
     "id": 3,
@@ -30,7 +32,8 @@
     "code": "A3",
     "price": 78,
     "stock": 23,
-    "category": "Camisetas"
+    "category": "Camisetas",
+    "available": true
   },
   {
     "id": 4,
@@ -41,7 +44,8 @@
     "code": "B1",
     "price": 58,
     "stock": 26,
-    "category": "Short"
+    "category": "Short",
+    "available": true
   },
   {
     "id": 5,
@@ -52,7 +56,8 @@
     "code": "B2",
     "price": 48,
     "stock": 26,
-    "category": "Short"
+    "category": "Short",
+    "available": true
   },
   {
     "id": 6,
@@ -63,7 +68,8 @@
     "code": "C1",
     "price": 75,
     "stock": 16,
-    "category": "Abrigos y accesorios"
+    "category": "Abrigos y accesorios",
+    "available": true
   }, 
   {
     "id": 7,
@@ -74,7 +80,8 @@
     "code": "C2",
     "price": 67,
     "stock": 8,
-    "category": "Abrigos y accesorios"
+    "category": "Abrigos y accesorios",
+    "available": true
   },
   {
     "id": 8,
@@ -85,7 +92,8 @@
     "code": "C3",
     "price": 28,
     "stock": 9,
-    "category": "Abrigos y accesorios"
+    "category": "Abrigos y accesorios",
+    "available": true
   },
   {
     "id": 9,
@@ -96,6 +104,7 @@
     "code": "C4",
     "price": 50,
     "stock": 6,
-    "category": "Abrigos y accesorios"
+    "category": "Abrigos y accesorios",
+    "available": true
   }
 ]

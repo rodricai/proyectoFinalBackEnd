@@ -1,13 +1,11 @@
-// app.js
-
 const express = require('express');
 const http = require('http');
 const mongoose = require('mongoose');
 const app = express();
 const exphbs = require('express-handlebars');
 const path = require('path');
-const fs = require('fs').promises; // Importa fs.promises para utilizar promesas
-const Product = require('./dao/models/productModel'); // Importa el modelo de producto
+const fs = require('fs').promises;
+const Product = require('./dao/models/productModel');
 const productRouter = require('./routes/product.routes');
 const cartRouter = require('./routes/cart.routes');
 const { Server } = require('socket.io');
@@ -16,7 +14,6 @@ const mongoUri = 'mongodb+srv://developer:MXjUuMEvcfjbzJIP@cluster0.u800qwq.mong
 
 async function loadProductsToMongo() {
   try {
-    // Lee el contenido del archivo JSON con los productos
     const jsonContent = await fs.readFile('./productos.json', 'utf-8');
     const productosDesdeJson = JSON.parse(jsonContent);
 
@@ -63,6 +60,17 @@ db.once('open', async () => {
       res.render('index', { title: 'La Tienda Roja', products });
     } catch (error) {
       console.error('Error al obtener productos desde MongoDB:', error);
+      res.status(500).send('Error interno del servidor');
+    }
+  });
+
+  app.get('/cart', (req, res) => {
+    try {
+      const cartData = getCartData(); 
+
+      res.render('cart', { products: cartData.products, total: cartData.total });
+    } catch (error) {
+      console.error('Error al obtener datos del carrito:', error);
       res.status(500).send('Error interno del servidor');
     }
   });

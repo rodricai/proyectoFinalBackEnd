@@ -10,6 +10,23 @@ class Cart {
     }
   }
 
+  async renderCartView(req, res) {
+    try {
+      const idCarrito = req.params.cid;
+      const carrito = await CartModel.findById(idCarrito);
+
+      if (carrito) {
+        // Renderizar la vista del carrito con los datos
+        res.render('cart', { products: carrito.products, total: carrito.total });
+      } else {
+        res.status(404).json({ error: 'Carrito no encontrado' });
+      }
+    } catch (error) {
+      console.error('Error al obtener datos del carrito:', error);
+      res.status(500).send('Error interno del servidor');
+    }
+  }
+
   async getCartProducts(req, res) {
     try {
       const idCarrito = req.params.cid;

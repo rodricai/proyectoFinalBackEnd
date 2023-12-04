@@ -34,4 +34,6 @@ cartRouter.post('/:cid/product/:pid', async (req, res) => {
   }
 });
 
+cartRouter.get('/', cartController.renderCartView);
+
 module.exports = cartRouter;
