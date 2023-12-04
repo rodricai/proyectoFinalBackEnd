@@ -1,55 +1,73 @@
+// app.js
+
 const express = require('express');
 const http = require('http');
+const mongoose = require('mongoose');
 const app = express();
 const exphbs = require('express-handlebars');
 const path = require('path');
-const fs = require("fs");
+const fs = require('fs').promises; // Importa fs.promises para utilizar promesas
+const Product = require('./dao/models/productModel'); // Importa el modelo de producto
 const productRouter = require('./routes/product.routes');
 const cartRouter = require('./routes/cart.routes');
-const { Server } = require('socket.io');  // Importa Server de socket.io
+const { Server } = require('socket.io');
 const PORT = 8080;
+const mongoUri = 'mongodb+srv://developer:MXjUuMEvcfjbzJIP@cluster0.u800qwq.mongodb.net/';
 
-const httpServer = http.createServer(app);
+async function loadProductsToMongo() {
+  try {
+    // Lee el contenido del archivo JSON con los productos
+    const jsonContent = await fs.readFile('./productos.json', 'utf-8');
+    const productosDesdeJson = JSON.parse(jsonContent);
 
-// Inicializa el servidor de sockets
-const io = new Server(httpServer);
-require('./class/socket')(io);  // Pasa io al initSocket en socket.js
+    await Product.deleteMany({});
+    await Product.insertMany(productosDesdeJson);
 
-const hbs = exphbs.create();
+    console.log('Productos insertados correctamente desde el archivo JSON');
+  } catch (error) {
+    console.error('Error al insertar productos desde el archivo JSON en MongoDB:', error);
+  }
+}
 
-app.use(express.static('public'));
-app.use('/api/products', productRouter);
-app.use('/api/carts', cartRouter);
-
-app.engine('handlebars', hbs.engine);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'handlebars');
-
-app.get('/', (req, res) => {
-  const productsPath = path.join(__dirname, '../productos.json');
-  const productsData = fs.readFileSync(productsPath, 'utf-8');
-  const products = JSON.parse(productsData);
-  res.render('index', { title: 'La Tienda Roja', products });
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+const db = mongoose.connection;
 
+db.on('error', (error) => console.error('Error de conexión a MongoDB:', error));
+db.once('open', async () => {
+  console.log('Conectado a MongoDB Atlas');
 
+  await loadProductsToMongo();
 
+  const httpServer = http.createServer(app);
 
+  const io = new Server(httpServer);
+  require('./class/socket')(io);
 
+  const hbs = exphbs.create();
 
+  app.use(express.static('public'));
+  app.use('/api/products', productRouter);
+  app.use('/api/carts', cartRouter);
 
+  app.engine('handlebars', hbs.engine);
+  app.set('views', path.join(__dirname, 'views'));
+  app.set('view engine', 'handlebars');
 
-const socketIO = require('socket.io');
-const io2 = new socketIO.Server(httpServer);
-const socketRouter = require('./routes/socket.routes');
-app.use('/realtimeproducts', socketRouter);
-io2.of('/realtimeproducts').on('connection', (socket) => {
-    console.log('Nuevo cliente conectado a /realtimeproducts');
-    socket.on('disconnect', () => {
-        console.log('Cliente desconectado de /realtimeproducts');
-    });
+  app.get('/', async (req, res) => {
+    try {
+      const products = await Product.find();
+      res.render('index', { title: 'La Tienda Roja', products });
+    } catch (error) {
+      console.error('Error al obtener productos desde MongoDB:', error);
+      res.status(500).send('Error interno del servidor');
+    }
+  });
+
+  httpServer.listen(PORT, () => {
+    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  });
 });

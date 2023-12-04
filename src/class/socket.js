@@ -1,40 +1,36 @@
-/*const { Server } = require('socket.io');
-const http = require('http');
-const fs = require('fs');
+const MessageService = require('../services/messageService');
 
-class Socket {
-  constructor(server) {
-    this.io = new Server(server, {
-      cors: {
-        origin: '*',
-      },
-    });
+function initSocket(io) {
+  const messageService = new MessageService();
 
-    this.io.on('connection', (socket) => {
-      console.log('Usuario conectado');
+  io.on('connection', (socket) => {
+    console.log(`Usuario conectado ${socket.id}`);
 
-      socket.on('disconnect', () => {
-        console.log('Usuario desconectado');
+   
+    messageService.getMessages()
+      .then((messages) => {
+        socket.emit('oldMessages', messages);
+      })
+      .catch((error) => {
+        console.error('Error al obtener mensajes antiguos:', error);
       });
-    });
-  }
 
-  realTimeProducts() {
-    const products = JSON.parse(fs.readFileSync('./productos.json', 'utf-8'));
-    this.io.emit('realTimeProducts', products);
-  }
+    socket.on('disconnect', () => {
+      console.log(`Usuario desconectado ${socket.id}`);
+    });
+
+    socket.on('sendMessage', async (data) => {
+      try {
+       
+        await messageService.addMessage(data.user, data.message);
+
+        
+        io.emit('messageReceived', data);
+      } catch (error) {
+        console.error('Error al procesar mensaje:', error);
+      }
+    });
+  });
 }
 
-module.exports = Socket;
-*/
-const {Server}  = require('socket.io')
-
-const init = (httpServer) => {
-  const socketServer = new Server(httpServer);
-
-  socketServer.on("connection", (socketClient) => {
-    console.log(`Usuario conectado ${socketClient.id}`);
-
-  });
-};
-module.exports = init;
+module.exports = initSocket;

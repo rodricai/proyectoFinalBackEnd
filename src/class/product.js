@@ -1,54 +1,70 @@
-const { ProductManager } = require('../models/productManager');
+const ProductModel = require('../dao/models/productModel');
 
 class Product {
-  constructor() {
-    this.gestorProducts = new ProductManager('./productos.json');
-  }
+  async getProducts(req, res) {
+    try {
+      const limit = req.query.limit;
+      let products = await ProductModel.find();
 
-  getProducts(req, res) {
-    const limit = req.query.limit;
-    const products = this.gestorProducts.getProducts();
+      if (limit) {
+        products = products.slice(0, parseInt(limit));
+      }
 
-    if (limit) {
-      res.json(products.slice(0, parseInt(limit)));
-    } else {
       res.json(products);
+    } catch (error) {
+      res.status(500).json({ error: 'Error al obtener los productos', details: error.message });
     }
   }
 
-  getProductById(req, res) {
-    const idProducto = parseInt(req.params.pid);
-    const producto = this.gestorProducts.getProductById(idProducto);
+  async getProductById(req, res) {
+    try {
+      const idProducto = req.params.pid;
+      const producto = await ProductModel.findById(idProducto);
 
-    if (producto) {
-      res.json(producto);
-    } else {
-      res.status(404).json({ error: 'Producto no encontrado' });
+      if (producto) {
+        res.json(producto);
+      } else {
+        res.status(404).json({ error: 'Producto no encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Error al obtener el producto', details: error.message });
     }
   }
 
-  addProduct(req, res) {
-    const nuevoProducto = req.body;
-    this.gestorProducts.addProduct(nuevoProducto);
-    res.status(201).json({ message: 'Producto agregado correctamente' });
-  }
-
-  updateProduct(req, res) {
-    const idProducto = parseInt(req.params.pid);
-    const updatedFields = req.body;
-    const updatedProduct = this.gestorProducts.updateProduct(idProducto, updatedFields);
-
-    if (updatedProduct) {
-      res.json({ message: 'Producto actualizado correctamente', product: updatedProduct });
-    } else {
-      res.status(404).json({ error: 'Producto no encontrado' });
+  async addProduct(req, res) {
+    try {
+      const nuevoProducto = req.body;
+      await ProductModel.create(nuevoProducto);
+      res.status(201).json({ message: 'Producto agregado correctamente' });
+    } catch (error) {
+      res.status(500).json({ error: 'Error al crear el producto', details: error.message });
     }
   }
 
-  deleteProduct(req, res) {
-    const idProducto = parseInt(req.params.pid);
-    this.gestorProducts.deleteProduct(idProducto);
-    res.json({ message: 'Producto eliminado correctamente' });
+  async updateProduct(req, res) {
+    try {
+      const idProducto = req.params.pid;
+      const updatedFields = req.body;
+      const updatedProduct = await ProductModel.findByIdAndUpdate(idProducto, updatedFields, { new: true });
+
+      if (updatedProduct) {
+        res.json({ message: 'Producto actualizado correctamente', product: updatedProduct });
+      } else {
+        res.status(404).json({ error: 'Producto no encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Error al actualizar el producto', details: error.message });
+    }
+  }
+
+  async deleteProduct(req, res) {
+    try {
+      const idProducto = req.params.pid;
+      await ProductModel.findByIdAndDelete(idProducto);
+      res.json({ message: 'Producto eliminado correctamente' });
+    } catch (error) {
+      res.status(500).json({ error: 'Error al eliminar el producto', details: error.message });
+    }
   }
 }
 
