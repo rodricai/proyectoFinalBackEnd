@@ -2,12 +2,16 @@ const express = require('express');
 const http = require('http');
 const mongoose = require('mongoose');
 const app = express();
+const session = require("express-session")
+//import session from "express-session"
 const exphbs = require('express-handlebars');
 const path = require('path');
 const fs = require('fs').promises;
 const Product = require('./dao/models/productModel');
 const productRouter = require('./routes/product.routes');
 const cartRouter = require('./routes/cart.routes');
+const socketRoutes = require("./routes/socket.routes")
+const loginRouter = require("./routes/login.routes")
 const { Server } = require('socket.io');
 const PORT = 8080;
 const mongoUri = 'mongodb+srv://developer:MXjUuMEvcfjbzJIP@cluster0.u800qwq.mongodb.net/';
@@ -45,14 +49,21 @@ db.once('open', async () => {
   require('./class/socket')(io);
 
   const hbs = exphbs.create();
-
+  const sessionSecret = "djalksdljaksjldk"
   app.use(express.static('public'));
   app.use('/api/products', productRouter);
   app.use('/api/carts', cartRouter);
-
+  app.use("/", socketRoutes);
+  app.use("/login", loginRouter);
+  app.use(session({
+    secret: sessionSecret,
+    resave: true,
+    saveUninitialized: true,
+  }));
   app.engine('handlebars', hbs.engine);
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'handlebars');
+
 
   app.get('/', async (req, res) => {
     try {
@@ -66,7 +77,7 @@ db.once('open', async () => {
 
   app.get('/cart', (req, res) => {
     try {
-      const cartData = getCartData(); 
+      const cartData = getCartData();
 
       res.render('cart', { products: cartData.products, total: cartData.total });
     } catch (error) {
