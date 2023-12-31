@@ -1,92 +1,80 @@
-const express = require('express');
-const http = require('http');
-const mongoose = require('mongoose');
+import express from 'express';
+import exphbs from 'express-handlebars';
+import sessions from 'express-session';
+import MongoStore from 'connect-mongo';
+import passport from 'passport';
+
+import { URI } from './db/mongosse.js';
+import { __dirname } from './utils.js';
+import path from 'path';
+import {init as initPassport} from './passport/passport.config.js'
+
+import cartRouter from "./routes/views/cartRoutes.js"
+import productRouter from "./routes/product.routes.js";
+import productManager from './productManager.js';
+import viewsRoutes from './routes/socket.routes.js';
+import indexRouter from './routes/views/index.router.js';
+import chatRouter from './routes/views/chat.router.js';
+import sessionRouter from './routes/api/session.router.js'
+import sessionRender from './routes/views/sessions.routes.js'
+
+const SESSION_SECRET = 'djalksdljaksjldk';
+
 const app = express();
-const session = require("express-session")
-//import session from "express-session"
-const exphbs = require('express-handlebars');
-const path = require('path');
-const fs = require('fs').promises;
-const Product = require('./dao/models/productModel');
-const productRouter = require('./routes/product.routes');
-const cartRouter = require('./routes/cart.routes');
-const socketRoutes = require("./routes/socket.routes")
-const loginRouter = require("./routes/login.routes")
-const { Server } = require('socket.io');
-const PORT = 8080;
-const mongoUri = 'mongodb+srv://developer:MXjUuMEvcfjbzJIP@cluster0.u800qwq.mongodb.net/';
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use(express.static(path.join(__dirname,'../public')));
 
-async function loadProductsToMongo() {
-  try {
-    const jsonContent = await fs.readFile('./productos.json', 'utf-8');
-    const productosDesdeJson = JSON.parse(jsonContent);
-
-    await Product.deleteMany({});
-    await Product.insertMany(productosDesdeJson);
-
-    console.log('Productos insertados correctamente desde el archivo JSON');
-  } catch (error) {
-    console.error('Error al insertar productos desde el archivo JSON en MongoDB:', error);
-  }
-}
-
-mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-const db = mongoose.connection;
-
-db.on('error', (error) => console.error('Error de conexión a MongoDB:', error));
-db.once('open', async () => {
-  console.log('Conectado a MongoDB Atlas');
-
-  await loadProductsToMongo();
-
-  const httpServer = http.createServer(app);
-
-  const io = new Server(httpServer);
-  require('./class/socket')(io);
-
-  const hbs = exphbs.create();
-  const sessionSecret = "djalksdljaksjldk"
-  app.use(express.static('public'));
-  app.use('/api/products', productRouter);
-  app.use('/api/carts', cartRouter);
-  app.use("/", socketRoutes);
-  app.use("/login", loginRouter);
-  app.use(session({
-    secret: sessionSecret,
+app.use(sessions({
+    store: MongoStore.create({
+       mongoUrl: URI,
+       mongoOptions: {}, 
+    }),
+    secret: SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
-  }));
-  app.engine('handlebars', hbs.engine);
-  app.set('views', path.join(__dirname, 'views'));
-  app.set('view engine', 'handlebars');
+}))
 
 
-  app.get('/', async (req, res) => {
-    try {
-      const products = await Product.find();
-      res.render('index', { title: 'La Tienda Roja', products });
-    } catch (error) {
-      console.error('Error al obtener productos desde MongoDB:', error);
-      res.status(500).send('Error interno del servidor');
-    }
-  });
 
-  app.get('/cart', (req, res) => {
-    try {
-      const cartData = getCartData();
+initPassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
-      res.render('cart', { products: cartData.products, total: cartData.total });
-    } catch (error) {
-      console.error('Error al obtener datos del carrito:', error);
-      res.status(500).send('Error interno del servidor');
-    }
-  });
+app.engine('handlebars', exphbs());
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'handlebars');
 
-  httpServer.listen(PORT, () => {
-    console.log(`Servidor escuchando en http://localhost:${PORT}`);
-  });
+
+
+
+app.get('/home',async (req,res) => {
+    const product = await productManager.getProducts();
+    res.render('index' , { title: 'handlebars y socket.io',product});
 });
+
+app.use('/old',productRouter);
+
+app.get('/', (req,res) =>{
+    res.redirect('/login')
+});
+
+
+app.use('/', sessionRender, sessionRouter);
+
+app.use('/', viewsRoutes);
+
+app.use('/api',cartRouter);
+
+app.use('/api',indexRouter);
+
+app.use('/api',chatRouter);
+
+app.use((error,req,res,next) => {
+    const message = `error desconocido: ${error.message}`;
+    console.error(message);
+    res.status(500).json({message});
+    next();
+})
+
+ export default app;
